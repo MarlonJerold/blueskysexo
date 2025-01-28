@@ -62,13 +62,11 @@ const App = () => {
   const [checkIns, setCheckIns] = useState([]);
   const [message, setMessage] = useState('');
 
-  // Carregar check-ins do localStorage
   useEffect(() => {
     const savedCheckIns = JSON.parse(localStorage.getItem('checkIns')) || [];
     setCheckIns(savedCheckIns);
   }, []);
 
-  // Função para adicionar um novo check-in
   const addCheckIn = () => {
     if (date && location) {
       const newCheckIn = {
@@ -85,7 +83,6 @@ const App = () => {
       setLocation('');
       setTags('');
 
-      // Salvar os check-ins no localStorage
       localStorage.setItem('checkIns', JSON.stringify(updatedCheckIns));
     } else {
       setMessage('Por favor, preencha todos os campos obrigatórios.');
