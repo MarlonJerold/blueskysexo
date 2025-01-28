@@ -67,14 +67,18 @@ const App = () => {
     setCheckIns(savedCheckIns);
   }, []);
 
+  const createCheckIn = (id, date, location, tags) => ({
+    id,
+    date,
+    location,
+    tags: tags.split(',').map(tag => tag.trim()),
+  });
+
+  const validateFields = (date, location) => date && location;
+
   const addCheckIn = () => {
-    if (date && location) {
-      const newCheckIn = {
-        id: checkIns.length + 1,
-        date,
-        location,
-        tags: tags.split(',').map(tag => tag.trim()),
-      };
+    if (validateFields(date, location)) {
+      const newCheckIn = createCheckIn(checkIns.length + 1, date, location, tags);
 
       const updatedCheckIns = [...checkIns, newCheckIn];
       setCheckIns(updatedCheckIns);
@@ -84,6 +88,7 @@ const App = () => {
       setTags('');
 
       localStorage.setItem('checkIns', JSON.stringify(updatedCheckIns));
+      
     } else {
       setMessage('Por favor, preencha todos os campos obrigatórios.');
     }
