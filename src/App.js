@@ -1,163 +1,212 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react"
 
 const styles = {
   container: {
-    padding: '40px',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f4f4f4',
-    minHeight: '100vh',
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
+    backgroundColor: "#f8f9fa",
+    minHeight: "100vh",
+    boxSizing: "border-box",
+  },
+  contentWrapper: {
+    maxWidth: "600px",
+    margin: "0 auto",
   },
   header: {
-    textAlign: 'center',
-    marginBottom: '30px',
-    color: '#333',
+    textAlign: "center",
+    marginBottom: "30px",
+    color: "#1a73e8",
+    fontSize: "2em",
+    fontWeight: "bold",
+  },
+  section: {
+    backgroundColor: "#ffffff",
+    borderRadius: "10px",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+    padding: "20px",
+    marginBottom: "20px",
+  },
+  sectionTitle: {
+    fontSize: "1.2em",
+    color: "#202124",
+    marginBottom: "20px",
+    fontWeight: "500",
   },
   inputGroup: {
-    marginBottom: '15px',
+    marginBottom: "20px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    color: "#5f6368",
+    fontSize: "0.9em",
   },
   input: {
-    width: '100%',
-    padding: '12px',
-    margin: '8px 0',
-    borderRadius: '5px',
-    border: '1px solid #ddd',
-    fontSize: '16px',
+    width: "100%",
+    padding: "12px",
+    fontSize: "14px",
+    border: "1px solid #dadce0",
+    borderRadius: "4px",
+    boxSizing: "border-box",
+    outline: "none",
+    transition: "border-color 0.2s",
   },
   button: {
-    padding: '12px 20px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    width: '100%',
+    width: "100%",
+    padding: "12px",
+    backgroundColor: "#1a73e8",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "14px",
+    cursor: "pointer",
+    transition: "background-color 0.2s",
   },
   buttonHover: {
-    backgroundColor: '#45a049',
+    backgroundColor: "#1557b0",
   },
   checkinList: {
-    listStyleType: 'none',
+    listStyle: "none",
     padding: 0,
+    margin: 0,
   },
   checkinItem: {
-    backgroundColor: '#fff',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '5px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    padding: "15px",
+    borderBottom: "1px solid #dadce0",
+  },
+  checkinDate: {
+    fontWeight: "500",
+    color: "#202124",
+  },
+  checkinLocation: {
+    color: "#5f6368",
+    marginLeft: "8px",
+  },
+  tag: {
+    display: "inline-block",
+    backgroundColor: "#f1f3f4",
+    padding: "4px 8px",
+    borderRadius: "16px",
+    fontSize: "12px",
+    color: "#5f6368",
+    margin: "4px 4px 4px 0",
   },
   message: {
-    textAlign: 'center',
-    marginTop: '20px',
-    fontSize: '18px',
-    color: '#333',
+    textAlign: "center",
+    color: "#1a73e8",
+    fontSize: "14px",
+    marginTop: "10px",
   },
-};
+}
 
 const App = () => {
-  const [date, setDate] = useState('');
-  const [location, setLocation] = useState('');
-  const [tags, setTags] = useState('');
-  const [checkIns, setCheckIns] = useState([]);
-  const [message, setMessage] = useState('');
+  const [date, setDate] = useState("")
+  const [location, setLocation] = useState("")
+  const [tags, setTags] = useState("")
+  const [checkIns, setCheckIns] = useState([])
+  const [message, setMessage] = useState("")
 
   useEffect(() => {
-    const savedCheckIns = JSON.parse(localStorage.getItem('checkIns')) || [];
-    setCheckIns(savedCheckIns);
-  }, []);
-
-  const createCheckIn = (id, date, location, tags) => ({
-    id,
-    date,
-    location,
-    tags: tags.split(',').map(tag => tag.trim()),
-  });
-
-  const validateFields = (date, location) => date && location;
+    const savedCheckIns = JSON.parse(localStorage.getItem("checkIns")) || []
+    setCheckIns(savedCheckIns)
+  }, [])
 
   const addCheckIn = () => {
-    if (validateFields(date, location)) {
-      const newCheckIn = createCheckIn(checkIns.length + 1, date, location, tags);
+    if (date && location) {
+      const newCheckIn = {
+        id: Date.now(),
+        date,
+        location,
+        tags: tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+      }
 
-      const updatedCheckIns = [...checkIns, newCheckIn];
-      setCheckIns(updatedCheckIns);
-      setMessage('Check-in registrado com sucesso!');
-      setDate('');
-      setLocation('');
-      setTags('');
+      const updatedCheckIns = [...checkIns, newCheckIn]
+      setCheckIns(updatedCheckIns)
+      localStorage.setItem("checkIns", JSON.stringify(updatedCheckIns))
 
-      localStorage.setItem('checkIns', JSON.stringify(updatedCheckIns));
-      
+      setDate("")
+      setLocation("")
+      setTags("")
+      setMessage("Check-in registrado com sucesso!")
     } else {
-      setMessage('Por favor, preencha todos os campos obrigatórios.');
+      setMessage("Por favor, preencha todos os campos obrigatórios.")
     }
-  };
+  }
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Bluesex App</h1>
-      
-      <div>
-        <h2>Registrar Check-in</h2>
-        <div style={styles.inputGroup}>
-          <input
-            type="date"
-            style={styles.input}
-            placeholder="Data"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
-        <div style={styles.inputGroup}>
-          <input
-            type="text"
-            style={styles.input}
-            placeholder="Localização"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
-        <div style={styles.inputGroup}>
-          <input
-            type="text"
-            style={styles.input}
-            placeholder="Tags (separadas por vírgula)"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-        </div>
-        <button
-          style={styles.button}
-          onMouseEnter={(e) => e.target.style.backgroundColor = styles.buttonHover.backgroundColor}
-          onMouseLeave={(e) => e.target.style.backgroundColor = styles.button.backgroundColor}
-          onClick={addCheckIn}
-        >
-          Adicionar Check-in
-        </button>
-      </div>
+      <div style={styles.contentWrapper}>
+        <h1 style={styles.header}>Bluesex App</h1>
 
-      <div>
-        <h2>Check-ins</h2>
-        {checkIns.length > 0 ? (
-          <ul style={styles.checkinList}>
-            {checkIns.map((checkIn) => (
-              <li key={checkIn.id} style={styles.checkinItem}>
-                <strong>{checkIn.date}</strong> - {checkIn.location}
-                {checkIn.tags.length > 0 && (
-                  <span> | Tags: {checkIn.tags.join(', ')}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p style={styles.message}>Nenhum check-in registrado ainda.</p>
-        )}
-      </div>
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>Registrar Check-in</h2>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Data</label>
+            <input type="date" style={styles.input} value={date} onChange={(e) => setDate(e.target.value)} />
+          </div>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Localização</label>
+            <input
+              type="text"
+              style={styles.input}
+              placeholder="Digite a localização"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Tags (separadas por vírgula)</label>
+            <input
+              type="text"
+              style={styles.input}
+              placeholder="Ex: praia, férias, família"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+            />
+          </div>
+          <button
+            style={styles.button}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = styles.buttonHover.backgroundColor)}
+            onMouseLeave={(e) => (e.target.style.backgroundColor = styles.button.backgroundColor)}
+            onClick={addCheckIn}
+          >
+            Adicionar Check-in
+          </button>
+        </div>
 
-      {message && <p style={styles.message}>{message}</p>}
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>Check-ins</h2>
+          {checkIns.length > 0 ? (
+            <ul style={styles.checkinList}>
+              {checkIns.map((checkIn) => (
+                <li key={checkIn.id} style={styles.checkinItem}>
+                  <span style={styles.checkinDate}>{checkIn.date}</span>
+                  <span style={styles.checkinLocation}>{checkIn.location}</span>
+                  {checkIn.tags.length > 0 && (
+                    <div style={{ marginTop: "8px" }}>
+                      {checkIn.tags.map((tag, index) => (
+                        <span key={index} style={styles.tag}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={styles.message}>Nenhum check-in registrado ainda.</p>
+          )}
+        </div>
+
+        {message && <p style={styles.message}>{message}</p>}
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
+
